@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { signIn, signOut, getProviders, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -9,23 +9,26 @@ import ProfileImg from "@/assets/images/profile.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
   const { data: session } = useSession();
-
   const [providers, setProviders] = useState<any>();
 
-  const toggleMenu = () => {
+  const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
-  };
+  }, []);
 
-  useEffect(() => {
-    const fetchProviders = async () => {
+  const fetchProviders = useCallback(async () => {
+    try {
       const providersData = await getProviders();
       setProviders(providersData);
       console.log(providersData);
-    };
-    fetchProviders();
+    } catch (error) {
+      console.log("error fetching", error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchProviders();
+  }, [fetchProviders]);
 
   return (
     <nav className="w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 bg-gray-800 text-white">
@@ -194,7 +197,6 @@ const Navbar = () => {
                     <li key={provider?.name}>
                       <button
                         type="button"
-                        key={provider?.name}
                         onClick={() => signIn(provider?.id)}
                       >
                         Sign In
