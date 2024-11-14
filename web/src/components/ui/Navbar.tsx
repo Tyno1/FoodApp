@@ -6,6 +6,8 @@ import { signIn, signOut, getProviders, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import ProfileImg from "@/assets/images/profile.png";
+import "animate.css";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,63 +18,63 @@ const Navbar = () => {
     setIsOpen((prev) => !prev);
   }, []);
 
-  const fetchProviders = useCallback(async () => {
+  const fetchProviders = async () => {
     try {
       const providersData = await getProviders();
       setProviders(providersData);
       console.log(providersData);
     } catch (error) {
-      console.log("error fetching", error);
+      toast("error fetching");
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchProviders();
-  }, [fetchProviders]);
+  }, []);
 
   return (
-    <nav className="w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 bg-gray-800 text-white">
+    <nav className="w-full mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20 bg-black text-white relative z-50 overflow-none">
       <Link href="/" className="flex-shrink-0">
-        Logo
+        <img src="" alt="Company Logo" />
       </Link>
       {/* web view */}
-      <ul className="hidden md:flex ml-10 flex items-baseline space-x-4">
+      <ul className="hidden md:flex ml-10 flex items-center">
         <li>
-          <a
+          <Link
             href="/"
             className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
           >
             Home
-          </a>
+          </Link>
         </li>
         <li>
-          <a
+          <Link
             href="/about"
             className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
           >
             About
-          </a>
+          </Link>
         </li>
         <li>
-          <a
+          <Link
             href="/services"
             className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
           >
             Services
-          </a>
+          </Link>
         </li>
         <li>
-          <a
+          <Link
             href="/contact"
             className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
           >
             Contact
-          </a>
+          </Link>
         </li>
 
         <li>
           {session && session.user ? (
-            <ul className="auth flex ml-20">
+            <ul className="auth flex ml-20 items-center">
               <li>
                 <Link
                   className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
@@ -83,6 +85,7 @@ const Navbar = () => {
               </li>
               <li>
                 <button
+                  aria-label="logout"
                   onClick={() => signOut()}
                   className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
                 >
@@ -99,11 +102,15 @@ const Navbar = () => {
               </li>
             </ul>
           ) : (
-            <ul className="flex gap-4">
+            <ul className="flex items-center gap-4">
               {providers &&
                 Object.values(providers).map((provider: any) => (
                   <li key={provider?.name}>
-                    <button type="button" onClick={() => signIn(provider?.id)}>
+                    <button
+                      aria-label={`Sign in with ${provider.name}`}
+                      type="button"
+                      onClick={() => signIn(provider?.id)}
+                    >
                       {provider.name} Sign In
                     </button>
                   </li>
@@ -113,6 +120,9 @@ const Navbar = () => {
         </li>
       </ul>
       <button
+        aria-expanded={isOpen}
+        aria-controls="mobile-menu"
+        aria-label={isOpen ? "Close menu" : "Open menu"}
         onClick={toggleMenu}
         className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
       >
@@ -121,12 +131,15 @@ const Navbar = () => {
 
       {/* mobile view */}
       {isOpen && (
-        <ul className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <ul
+          id="mobile-menu"
+          className="md:hidden w-full h-[100vh] space-y-1 sm:px-3 absolute top-20 right-0 bg-white text-black animate__animated animate__slideInLeft"
+        >
           <li>
             <Link
               href="/"
               onClick={toggleMenu}
-              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700"
+              className="block px-3 py-6 text-base font-medium hover:bg-black hover:text-white"
             >
               Home
             </Link>
@@ -135,7 +148,7 @@ const Navbar = () => {
             <Link
               href="/about"
               onClick={toggleMenu}
-              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700"
+              className="block px-3 py-6 text-base font-medium hover:bg-black hover:text-white "
             >
               About
             </Link>
@@ -144,7 +157,7 @@ const Navbar = () => {
             <Link
               href="/services"
               onClick={toggleMenu}
-              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700"
+              className="block px-3 py-6 text-base font-medium hover:bg-black hover:text-white "
             >
               Services
             </Link>
@@ -153,53 +166,46 @@ const Navbar = () => {
             <Link
               href="/contact"
               onClick={toggleMenu}
-              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700"
+              className="block px-3 py-6 text-base font-medium hover:bg-black hover:text-white"
             >
               Contact
             </Link>
           </li>
           <li>
             {session && session.user ? (
-              <ul className="auth flex flex-col items-start ">
-                <li>
+              <ul className="auth flex flex-col items-start w-[100vw]">
+                <li className="w-full">
                   <Link
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700"
+                    className="block px-3 py-6 text-base font-medium hover:bg-black hover:text-white"
                     href="/dashboard"
                     onClick={toggleMenu}
                   >
                     Dashboard
                   </Link>
                 </li>
-                <li>
+                <li className="w-full">
                   <button
                     onClick={() => {
                       toggleMenu();
                       signOut();
                     }}
-                    className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700"
+                    className="block px-3 py-6 text-base font-medium hover:bg-black hover:text-white w-full"
                   >
                     Logout
                   </button>
                 </li>
-                <li>
-                  <Image
-                    alt="profile_image"
-                    src={ProfileImg}
-                    width={30}
-                    height={30}
-                  />
-                </li>
               </ul>
             ) : (
-              <ul>
+              <ul className="">
                 {providers &&
                   Object.values(providers).map((provider: any) => (
                     <li key={provider?.name}>
                       <button
+                        aria-label={`Sign in with ${provider.name}`}
                         type="button"
                         onClick={() => signIn(provider?.id)}
                       >
-                        Sign In
+                        {provider.name} Sign In
                       </button>
                     </li>
                   ))}

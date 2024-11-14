@@ -1,5 +1,9 @@
+import Hero from "@/components/ui/Hero";
+
 export default function Home() {
   return (
-    <section className="h-[100%] text-4xl w-full flex-center flex-col"> Home</section>
+    <div className="w-[100vw] min-h-[100vh] flex flex-col items-center">
+      <Hero />
+    </div>
   );
 }

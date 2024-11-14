@@ -5,6 +5,7 @@ import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import Provider from "@/components/Provider";
 import { getServerSession } from "next-auth";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,8 @@ export default async function RootLayout({
     <html lang="en" className={inter.className}>
       <body>
         <Provider session={session}>
-          <main>
+          <ToastContainer />
+          <main className="">
             <Navbar />
             {children}
             <Footer />
